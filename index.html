@@ -38,6 +38,8 @@
 <style>
 	.page-header_title .letter {display: inline-flex; transform: translateY(20vw);}
   .page-header_title .word {display: inline-flex; overflow: hidden;}
+  .text-heading.is__header.is__anime {opacity: 0; position: absolute;}
+  .text-heading.is__header.is__anime.active {opacity: 1; position: relative;}
   .content-home_introduction {overflow-x: clip;}
   .layout-grid.is__header {width: 45vw !important;}
 	@media screen and (max-width: 767px) {
@@ -757,79 +759,81 @@
 
             </script>
             <script>
+$(document).ready(function() {
   // Wrap every line in a span
-var textWrapper = document.getElementsByClassName("text-heading is__header");
-for (var i = 0; i < textWrapper.length; i++) {
-var wordWrap = textWrapper.item(i);
-wordWrap.innerHTML = wordWrap.innerHTML.replace(/(^|<\/?[^>]+>|\s+)([^\s<]+)/g, '$1<span class="word">$2</span>');
-}
+  var textWrapper = document.getElementsByClassName("text-heading is__header");
+  for (var i = 0; i < textWrapper.length; i++) {
+    var wordWrap = textWrapper.item(i);
+    wordWrap.innerHTML = wordWrap.innerHTML.replace(/(^|<\/?[^>]+>|\s+)([^\s<]+)/g, '$1<span class="word">$2</span>');
+  }
 
-// Wrap every letter in a span
-var textLetter = document.getElementsByClassName("word");
-for (var i = 0; i < textLetter.length; i++) {
-var letterWrap = textLetter.item(i);
-letterWrap.innerHTML = letterWrap.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
-}
+  // Wrap every letter in a span
+  var textLetter = document.getElementsByClassName("word");
+  for (var i = 0; i < textLetter.length; i++) {
+    var letterWrap = textLetter.item(i);
+    letterWrap.innerHTML = letterWrap.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+  }
 
-function switchHeadlines() {
-	let activeHeadline = $('.text-heading.is__anime.active');
-	if (activeHeadline.next().length > 0) {
-		activeHeadline.next().addClass('active');
-	} else {
-		$('.text-heading.is__anime').eq(0).addClass('active');
-	}
-	activeHeadline.removeClass('active');
-}
-
-function createAnimation() {
-  var staticLetters = anime.timeline({
-    loop: false,
-    autoplay: true,
-    complete: function() {
-      // Start animating the dynamic letters after static letters finish
-      animateDynamicLetters();
+  function switchHeadlines() {
+    let activeHeadline = $('.text-heading.is__anime.active');
+    if (activeHeadline.next().length > 0) {
+      activeHeadline.next().addClass('active');
+    } else {
+      $('.text-heading.is__anime').eq(0).addClass('active');
     }
-  });
+    activeHeadline.removeClass('active');
+  }
 
-  staticLetters
-    .add({
-      targets: '.page-header_title .is__static .letter',
-			translateY: [(window.innerHeight * 0.2), 0], // Example: 80 VW (80% of viewport height)
-      easing: 'easeInOutQuint',
-      duration: 1000,
-      delay: (el, i) => 400 + 60 * i
-    });
-
-  function animateDynamicLetters() {
-    var dynamicLetters = anime.timeline({
+  function createAnimation() {
+    var staticLetters = anime.timeline({
       loop: false,
-      autoplay: true
+      autoplay: true,
+      complete: function() {
+        // Start animating the dynamic letters after static letters finish
+        animateDynamicLetters();
+      }
     });
 
-    dynamicLetters
+    staticLetters
       .add({
-        targets: '.page-header_title .is__anime.active .letter',
-				translateY: [(window.innerHeight * 0.2), 0], // Example: 80 VW (80% of viewport height)
-        translateZ: 0,
+        targets: '.page-header_title .is__static .letter',
+        translateY: [(window.innerHeight * 0.2), 0], // Example: 80 VW (80% of viewport height)
         easing: 'easeInOutQuint',
         duration: 1000,
         delay: (el, i) => 400 + 60 * i
-      }).add({
-        targets: '.page-header_title .is__anime.active .letter',
-        translateY: [0, (window.innerHeight * 0.2)], // Example: 80 VW (80% of viewport height)
-        easing: 'easeInOutQuint',
-        duration: 800,
-        delay: (el, i) => 100 + 30 * i,
-        // Change text on loop
-        complete: function(anim) {
-          switchHeadlines();
-          animateDynamicLetters(); // Retarget and animate new active letters
-        }
       });
-  }
-}
 
-createAnimation();
+    function animateDynamicLetters() {
+      var dynamicLetters = anime.timeline({
+        loop: false,
+        autoplay: true
+      });
+
+      dynamicLetters
+        .add({
+          targets: '.page-header_title .is__anime.active .letter',
+          translateY: [(window.innerHeight * 0.2), 0], // Example: 80 VW (80% of viewport height)
+          translateZ: 0,
+          easing: 'easeInOutQuint',
+          duration: 1000,
+          delay: (el, i) => 400 + 60 * i
+        }).add({
+          targets: '.page-header_title .is__anime.active .letter',
+          translateY: [0, (window.innerHeight * 0.2)], // Example: 80 VW (80% of viewport height)
+          easing: 'easeInOutQuint',
+          duration: 800,
+          delay: (el, i) => 100 + 30 * i,
+          // Change text on loop
+          complete: function(anim) {
+            switchHeadlines();
+            animateDynamicLetters(); // Retarget and animate new active letters
+          }
+        });
+    }
+  }
+
+  createAnimation();
+});
 </script>
 
 <script>
